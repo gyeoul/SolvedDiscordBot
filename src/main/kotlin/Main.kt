@@ -7,5 +7,10 @@ import mu.KotlinLogging
 private val log = KotlinLogging.logger {}
 fun main() {
     log.info("Server Started")
-    DiscordBot().run()
+    try {
+        val bot = DiscordBot()
+        bot.run()
+    } catch (e: Exception) {
+        log.error(e) { "Error: " + e.message }
+    }
 }

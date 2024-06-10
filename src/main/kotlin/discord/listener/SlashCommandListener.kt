@@ -1,11 +1,12 @@
 package dev.gyeoul.discord.listener
 
 import dev.gyeoul.crawler.CrawlerService
+import dev.gyeoul.database.Database
+import dev.gyeoul.util.SolvedAcUtils
 import mu.KotlinLogging
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.SlashCommandCreateEvent
 import org.javacord.api.listener.interaction.SlashCommandCreateListener
-import java.awt.Color
 
 
 class SlashCommandListener : SlashCommandCreateListener {
@@ -39,15 +40,16 @@ class SlashCommandListener : SlashCommandCreateListener {
 
                     "boj user info" -> {
                         try {
+                            val util = SolvedAcUtils()
                             val name = slashCommandInteraction.getArgumentByName("name").get().stringValue.get()
-                            val user = CrawlerService().getUserByName(name)
+                            val user = Database().getUserInfo(name)
                             val embed = EmbedBuilder()
                                 .setTitle(user.name)
                                 .setDescription(user.bio)
-                                .addField("티어", "${user.tier}", true)
+                                .addField("티어", util.convertLevelToTier(user.tier), true)
                                 .addField("시도한 문제", "${user.problems.count()}", true)
                                 .addField("랭킹", "${user.rank}", true)
-                                .setColor(Color.ORANGE)
+                                .setColor(util.convertTierToColor(util.convertLevelToTier(user.tier)))
                             messageBuilder.addEmbeds(embed)
                             ""
                         } catch (e: Exception) {
